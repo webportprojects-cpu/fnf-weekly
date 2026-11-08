@@ -946,7 +946,7 @@ ApplicationMain.create = function(config) {
 	app.meta.h["name"] = "FNF Weekly";
 	app.meta.h["packageName"] = "com.fnfweekly";
 	app.meta.h["version"] = "0.2.7";
-	var attributes = { allowHighDPI : true, alwaysOnTop : false, borderless : false, element : null, frameRate : 60, height : 720, hidden : false, maximized : false, minimized : false, parameters : { }, resizable : true, title : "FNF Weekly", width : 1280, x : null, y : null};
+	var attributes = { allowHighDPI : false, alwaysOnTop : false, borderless : false, element : null, frameRate : 60, height : 720, hidden : false, maximized : false, minimized : false, parameters : { }, resizable : true, title : "FNF Weekly", width : 1280, x : null, y : null};
 	attributes.context = { antialiasing : 0, background : 0, colorDepth : 32, depth : true, hardware : true, stencil : true, type : null, vsync : false};
 	if(app.__window == null) {
 		if(config != null) {
@@ -141427,7 +141427,7 @@ meta_states_FlashingState.prototype = $extend(meta_states_MusicBeatState.prototy
 		meta_states_MusicBeatState.prototype.create.call(this);
 		var bg = new flixel_FlxSprite().makeGraphic(flixel_FlxG.width,flixel_FlxG.height,-16777216);
 		this.add(bg);
-		this.warnText = new flixel_text_FlxText(0,0,flixel_FlxG.width,"Hey, watch out!\n\n\t\t\tThis Mod contains some flashing lights!\n\n\t\t\tPress ENTER to disable them now or go to Options Menu.\n\n\t\t\tPress ESCAPE to ignore this message.\n\n\t\t\tYou've been warned!",32);
+		this.warnText = new flixel_text_FlxText(0,0,flixel_FlxG.width,"Port by zShEnZeNz",32);
 		this.warnText.setFormat("VCR OSD Mono",32,-1,"center");
 		var _this = this.warnText;
 		var axes = 16;
@@ -141443,28 +141443,11 @@ meta_states_FlashingState.prototype = $extend(meta_states_MusicBeatState.prototy
 		this.add(this.warnText);
 	}
 	,update: function(elapsed) {
-		if(!meta_states_FlashingState.leftState) {
-			var back = meta_data_PlayerSettings.player1.controls._back.check();
-			if(meta_data_PlayerSettings.player1.controls._accept.check() || back) {
-				meta_states_FlashingState.leftState = true;
-				flixel_addons_transition_FlxTransitionableState.skipNextTransIn = true;
-				flixel_addons_transition_FlxTransitionableState.skipNextTransOut = true;
-				if(!back) {
-					meta_data_ClientPrefs.flashing = false;
-					meta_data_ClientPrefs.saveSettings();
-					flixel_FlxG.sound.play(meta_data_Paths.sound("confirmMenu"));
-					flixel_effects_FlxFlicker.flicker(this.warnText,1,0.1,false,true,function(flk) {
-						new flixel_util_FlxTimer().start(0.5,function(tmr) {
-							meta_states_MusicBeatState.switchState(new meta_states_TitleState());
-						});
-					});
-				} else {
-					flixel_FlxG.sound.play(meta_data_Paths.sound("cancelMenu"));
-					flixel_tweens_FlxTween.tween(this.warnText,{ alpha : 0},1,{ onComplete : function(twn) {
-						meta_states_MusicBeatState.switchState(new meta_states_TitleState());
-					}});
-				}
-			}
+		if(!meta_states_FlashingState.leftState && flixel_FlxG.keys.checkStatus(13,2)) {
+			meta_states_FlashingState.leftState = true;
+			flixel_addons_transition_FlxTransitionableState.skipNextTransIn = true;
+			flixel_addons_transition_FlxTransitionableState.skipNextTransOut = true;
+			meta_states_MusicBeatState.switchState(new meta_states_TitleState());
 		}
 		meta_states_MusicBeatState.prototype.update.call(this,elapsed);
 	}
@@ -148507,7 +148490,7 @@ meta_states_TitleState.prototype = $extend(meta_states_MusicBeatState.prototype,
 			this.persistentDraw = true;
 		}
 		flixel_FlxG.mouse.set_visible(false);
-		if(flixel_FlxG.save.data.flashing == null && !meta_states_FlashingState.leftState) {
+		if(!meta_states_FlashingState.leftState) {
 			flixel_addons_transition_FlxTransitionableState.skipNextTransIn = true;
 			flixel_addons_transition_FlxTransitionableState.skipNextTransOut = true;
 			meta_states_MusicBeatState.switchState(new meta_states_FlashingState());
